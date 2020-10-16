@@ -16,8 +16,6 @@ app.use(cors());
 app.use(express.static("services"));
 app.use(fileUpload());
 
-var admin = require("firebase-admin");
-
 var serviceAccount = require("creative-agency-dc106-firebase-adminsdk-wdqrh-960c47e74a.json");
 
 admin.initializeApp({
@@ -54,19 +52,6 @@ client.connect((err) => {
     .db(`${process.env.DB_NAME}`)
     .collection("admins");
 
-  app.get("/", (req, res) => {
-    res.send("It's working successfully");
-  });
-
-  // // to add services
-  // app.post("/addServices", (req, res) => {
-  //   const services = req.body;
-  //   console.log(services);
-  //   servicesCollection.insertOne(services).then((result) => {
-  //     res.send(result.insertedCount > 0);
-  //   });
-  // });
-
   // to add customer orders
   app.post("/addOrders", (req, res) => {
     const file = req.files.file;
@@ -99,6 +84,10 @@ client.connect((err) => {
         res.send(result.insertedCount > 0);
         console.log(result);
       });
+  });
+
+  app.get("/", (req, res) => {
+    res.send("It's working successfully");
   });
 
   // to add new service by admin
@@ -198,4 +187,4 @@ client.connect((err) => {
   });
 });
 
-app.listen(port, () => console.log("listening at " + 5000));
+app.listen(process.env.PORT || port, () => console.log("listening at " + 5000));

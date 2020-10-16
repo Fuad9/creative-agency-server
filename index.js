@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.static("services"));
 app.use(fileUpload());
 
-var serviceAccount = require("creative-agency-dc106-firebase-adminsdk-wdqrh-960c47e74a.json");
+var serviceAccount = require("./creative-agency-dc106-firebase-adminsdk-wdqrh-960c47e74a.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

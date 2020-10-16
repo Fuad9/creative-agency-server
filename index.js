@@ -3,7 +3,6 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 require("dotenv").config();
 const fileUpload = require("express-fileupload");
-const fs = require("fs-extra");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.sipuf.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 const MongoClient = require("mongodb").MongoClient;
 const { ObjectID } = require("mongodb");
@@ -16,7 +15,7 @@ app.use(cors());
 app.use(express.static("services"));
 app.use(fileUpload());
 
-var serviceAccount = require("./creative-agency-dc106-firebase-adminsdk-wdqrh-960c47e74a.json");
+var serviceAccount = require("./creative-agency-dc106-firebase-adminsdk-wdqrh-889e3aba29.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -132,6 +131,35 @@ client.connect((err) => {
     adminsCollection.insertOne(admin).then((result) => {
       res.send(result.insertedCount > 0);
     });
+  });
+
+  // to retrieve single data by JWT
+  app.get("/showIndividualOrders", (req, res) => {
+    const bearer = req.headers.authorization;
+    if (bearer && bearer.startsWith("Bearer ")) {
+      const idToken = bearer.split(" ")[1];
+      admin
+        .auth()
+        .verifyIdToken(idToken)
+        .then(function (decodedToken) {
+          const tokenEmail = decodedToken.email;
+          const queryEmail = req.query.email;
+          if (tokenEmail == queryEmail) {
+            ordersCollection
+              .find({ email: queryEmail })
+              .toArray((err, documents) => {
+                res.status(200).send(documents);
+              });
+          } else {
+            res.status(401).send("un-authorized access");
+          }
+        })
+        .catch(function (error) {
+          res.status(401).send("un-authorized access");
+        });
+    } else {
+      res.status(401).send("un-authorized access");
+    }
   });
 
   // to retrieve all services

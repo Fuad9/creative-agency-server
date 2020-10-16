@@ -59,7 +59,6 @@ client.connect((err) => {
     const email = req.body.email;
     const service = req.body.service;
     const price = req.body.price;
-    const status = req.body.status;
     const description = req.body.description;
     const newImg = file.data;
     const encImg = newImg.toString("base64");
@@ -78,11 +77,10 @@ client.connect((err) => {
         service,
         price,
         description,
-        status,
+        status: "Pending",
       })
       .then((result) => {
-        res.send(result.insertedCount > 0);
-        console.log(result);
+        res.send(result);
       });
   });
 

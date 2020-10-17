@@ -133,35 +133,6 @@ client.connect((err) => {
     });
   });
 
-  // to retrieve single data by JWT
-  app.get("/showIndividualOrders", (req, res) => {
-    const bearer = req.headers.authorization;
-    if (bearer && bearer.startsWith("Bearer ")) {
-      const idToken = bearer.split(" ")[1];
-      admin
-        .auth()
-        .verifyIdToken(idToken)
-        .then(function (decodedToken) {
-          const tokenEmail = decodedToken.email;
-          const queryEmail = req.query.email;
-          if (tokenEmail == queryEmail) {
-            ordersCollection
-              .find({ email: queryEmail })
-              .toArray((err, documents) => {
-                res.status(200).send(documents);
-              });
-          } else {
-            res.status(401).send("un-authorized access");
-          }
-        })
-        .catch(function (error) {
-          res.status(401).send("un-authorized access");
-        });
-    } else {
-      res.status(401).send("un-authorized access");
-    }
-  });
-
   // to retrieve all services
   app.get("/showServices", (req, res) => {
     servicesCollection.find({}).toArray((err, documents) => {
